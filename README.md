@@ -21,6 +21,10 @@ Device-specific functionality is registered as follows:
   * lock diagnostic binary sensor
   * valve position diagnostic sensor
 
+Functionality of the climate device:
+* bidirectional communication, e.g. changes made to the physical device are reflected in Home Assistant
+* supports eco, comfort and boost modes
+
 ## Prerequisites
 * a working [Home Assistant](https://www.home-assistant.io/) instance
 * a working [FHEM](https://fhem.de/) instance
