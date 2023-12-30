@@ -9,7 +9,7 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
 * eQ-3 MAX! hardware configured to work with FHEM (see [FHEM Wiki](https://wiki.fhem.de/wiki/MAX))
 
 ## Installation
-* Copy `MAX2HASSdiscovery` from [99_myUtils.pm](99_myUtils.pm) into your `99_myUtils.pm` (see [FHEM Wiki](https://wiki.fhem.de/wiki/99_myUtils_anlegen) for detailed instructions).
+* Copy `MAX2HASSdiscovery` from [99_myUtils.pm](99_myUtils.pm) into your `99_myUtils.pm` (see [FHEM Wiki](https://wiki.fhem.de/wiki/99_myUtils_anlegen) for detailed instructions).  
   **Note:** Make sure you paste the code between the lines `# Enter you functions below _this_ line.` and `1;`, keeping both intact.
 * Change the host name in `my $url = "http://fhem.local:8083/fhem?detail=$device";` ([99_myUtils.pm#L46](99_myUtils.pm#L46)) to point to your FHEM instance.
 
