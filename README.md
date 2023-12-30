@@ -9,10 +9,12 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
 * eQ-3 MAX! hardware configured to work with FHEM (see [FHEM Wiki](https://wiki.fhem.de/wiki/MAX))
 
 ## Installation
-* Copy `MAX2HASSdiscovery` from [99_myUtils.pm](99_myUtils.pm) into your `99_myUtils.pm` (see [FHEM Wiki](https://wiki.fhem.de/wiki/99_myUtils_anlegen) for detailed instructions).  
-**Note:** Make sure you paste the code between the lines `# Enter you functions below _this_ line.` and `1;`, keeping both intact.
+* Copy `MAX2HASSdiscovery` from [99_myUtils.pm](99_myUtils.pm) into your `99_myUtils.pm` (see [FHEM Wiki](https://wiki.fhem.de/wiki/99_myUtils_anlegen) for detailed instructions).
+  **Note:** Make sure you paste the code between the lines `# Enter you functions below _this_ line.` and `1;`, keeping both intact.
+* Change the host name in `my $url = "http://fhem.local:8083/fhem?detail=$device";` ([99_myUtils.pm#L46](99_myUtils.pm#L46)) to point to your FHEM instance.
 
 ## Configuration
+
 ### FHEM
 * Backup your `fhem.cfg`, just in case anything goes wrong.
 * Configure a connection to your MQTT broker using the [MQTT2_CLIENT](https://fhem.de/commandref.html#MQTT2_CLIENT) module:  
@@ -37,6 +39,7 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
   ```
 * For each MAX! device that you would like to integrate to FHEM: set its actCycle attribute to 12:00:  
   `attr <myMaxDevice> actCycle 12:00`
+
 ### Home Assistant
 * Backup your Home Assistant `config` directory, just in case anything goes wrong.
 * Configure a connection to your MQTT broker using the [MQTT integration](https://www.home-assistant.io/integrations/mqtt/).
@@ -58,7 +61,9 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
         - comfort
         - boost
       type: climate-preset-modes
+
 ## Limitations
-The following eQ-3 MAX! devices are not yet supported:
-* [Eco Switch](https://www.eq-3.de/produkte/max/detail/bc-pb-2-wm.html)
-* [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
+* This integration deliberately does not allow thermostats to be set to their maximum temperature ("On" mode).
+* The following eQ-3 MAX! devices are not yet supported:
+  * [Eco Switch](https://www.eq-3.de/produkte/max/detail/bc-pb-2-wm.html)
+  * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
