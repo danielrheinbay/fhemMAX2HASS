@@ -2,6 +2,25 @@
 Integrate [eQ-3 MAX!](https://www.eq-3.de/produkte/max.html) devices into [Home Assistant](https://www.home-assistant.io/) using [FHEM](https://fhem.de/) instead of the vendor's proprietary MAX Cube LAN Gateway.
 Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant.io/integrations/maxcube/), but it requires the vendor's proprietary [MAX Cube LAN Gateway](https://www.eq-3.de/produkte/max/detail/bc-lgw-o-tw.html). This is no longer available, no longer supported by the vendor, and has a reputation to "forget" its configuration. Also, eQ-3 has shutdown all MAX!-related cloud services in July 2023.
 
+## Provided functionality
+Each MAX! device is registered as an individual device in [Home Assistant's device registry](https://developers.home-assistant.io/docs/device_registry_index/), along with the following information:
+* its firmware version
+* deep link to its FHEM device page, allowing you to jump from Home Assistant to FHEM for advanced configuration (e.g. setting week profiles).
+* diagnostic sensors:
+  * battery binary sensor
+  * signal strength sensor
+
+Device-specific functionality is registered as follows:
+* Window Sensor:
+  * main binary sensor
+* Room Thermostat:
+  * main climate device
+  * lock diagnostic binary sensor
+* Radiator Thermostat:
+  * main climate device
+  * lock diagnostic binary sensor
+  * valve position diagnostic sensor
+
 ## Prerequisites
 * a working [Home Assistant](https://www.home-assistant.io/) instance
 * a working [FHEM](https://fhem.de/) instance
@@ -74,3 +93,11 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
 * The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
   * [Eco Switch](https://www.eq-3.de/produkte/max/detail/bc-pb-2-wm.html)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
+
+## FAQ
+* **Q**: When using a Room Thermostat, the temperature and mode set through Home Assistant is not passed on to the Radiator Thermostats associated with the Room Thermostat. How can I control more than one thermostat in a room?  
+  **A**: Yes, this is a known limitation of all MAX thermostats: they send temperature and mode changes only when set physically. They do not send changes when set over the air.
+  Here is a workaround, using you have one Wall Thermostat and one or more Room Thermostats in the same room:
+    * In Home Assistant, add the Wall Thermostat to your dashboard.
+    * In FHEM, for each Radiator Thermostat, amend its `mqttSubscribe` attribute by a second subscription referring to the Wall Thermostat's `set` topic, e.g.  
+      `desiredTemperature:stopic={"$base/<MyWallThermostat>/set"}`
