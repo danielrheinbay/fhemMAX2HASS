@@ -100,6 +100,7 @@ Functionality of the climate device:
 * The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
   * [Eco Switch](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-PB-2-WM-2_UM_EN.pdf)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
+* No error handling: If required readings are missing, the code will fail silently. Deleting affected FHEM devices and re-adding them should restore all required readings. 
 
 ## FAQ
 * **Q**: When using a Room Thermostat, the temperature and mode set through Home Assistant is not passed on to the Radiator Thermostats associated with the Room Thermostat. How can I control more than one thermostat in a room?  
