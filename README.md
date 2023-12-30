@@ -95,7 +95,7 @@ Functionality of the climate device:
 ## Limitations
 * This integration deliberately does not allow thermostats to be set to their maximum temperature ("On" mode).
 * The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
-  * [Eco Switch](https://www.eq-3.de/produkte/max/detail/bc-pb-2-wm.html)
+  * [Eco Switch](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-PB-2-WM-2_UM_EN.pdf)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
 
 ## FAQ
