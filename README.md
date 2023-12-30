@@ -61,7 +61,10 @@ Functionality of the climate device:
   attr hass.MAXdiscovery do always
   ```
 * For each MAX! device that you would like to integrate to FHEM: set its actCycle attribute to 12:00:  
-  `attr <myMaxDevice> actCycle 12:00`
+  `attr <myMaxDevice> actCycle 12:00`  
+  This does two things:
+  * Create a new reading `Activity`, which the above DOIF relies on.
+  * After 12 hours of inactivity (e.g. battery dead), the device is marked unavailable in Home Assistant.
 
 ### Home Assistant
 * Backup your Home Assistant `config` directory, just in case anything goes wrong.
