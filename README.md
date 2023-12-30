@@ -43,7 +43,7 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
 ### Home Assistant
 * Backup your Home Assistant `config` directory, just in case anything goes wrong.
 * Configure a connection to your MQTT broker using the [MQTT integration](https://www.home-assistant.io/integrations/mqtt/).
-  `MAX2HASSdiscovery` then uses Home Assistant's [MQTT discovery protocol](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery] to configure all devices automatically. You should find all MAX! devices after a couple of minutes. If not, trigger an activity, e.g. open/close a window shutter or change the mode or temperature of a thermostat.
+  `MAX2HASSdiscovery` then uses Home Assistant's [MQTT discovery protocol](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery) to configure all devices automatically. You should find all MAX! devices after a couple of minutes. If not, trigger an activity, e.g. open/close a window shutter or change the mode or temperature of a thermostat.
 * In your dashboard, add cards as neeeded, e.g.
   ```
   type: tile
