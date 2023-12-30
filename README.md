@@ -88,7 +88,7 @@ Functionality of the climate device:
 ## Supported MAX! devices
 * [Radiator Thermostat](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyG-3_UM_EN.pdf)
 * [Radiator Thermostat+](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyG-4_UM_EN.pdf) (not tested)
-* [Radiator Thermostat basic](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyN_UM_EN.pdf)
+* [Radiator Thermostat basic](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyN_UM_EN.pdf) (not tested)
 * [Wall Thermostat+](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-TC-C-WM-4_UM_EN.pdf)
 * [Window Sensor](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-SC-Rd-WM-2_UM_EN.pdf)
 
