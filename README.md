@@ -62,8 +62,15 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
         - boost
       type: climate-preset-modes
 
+## Supported MAX! devices
+* [Radiator Thermostat](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyG-3_UM_EN.pdf)
+* [Radiator Thermostat+](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyG-4_UM_EN.pdf) (not tested)
+* [Radiator Thermostat basic](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-RT-TRX-CyN_UM_EN.pdf)
+* [Wall Thermostat+](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-TC-C-WM-4_UM_EN.pdf)
+* [Window Sensor](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-SC-Rd-WM-2_UM_EN.pdf)
+
 ## Limitations
 * This integration deliberately does not allow thermostats to be set to their maximum temperature ("On" mode).
-* The following eQ-3 MAX! devices are not yet supported:
+* The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
   * [Eco Switch](https://www.eq-3.de/produkte/max/detail/bc-pb-2-wm.html)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
