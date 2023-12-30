@@ -34,7 +34,7 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
   ```
 * Add a trigger to call MAX2HASSdiscovery using the [DOIF](https://commandref.fhem.de/commandref.html#DOIF) module:  
   ```
-  defmod hass.MAXdiscovery DOIF ([":Activity",""]) ({MAX2HASSdiscovery("$DEVICE")})
+  define hass.MAXdiscovery DOIF ([":Activity",""]) ({MAX2HASSdiscovery("$DEVICE")})
   attr hass.MAXdiscovery do always
   ```
 * For each MAX! device that you would like to integrate to FHEM: set its actCycle attribute to 12:00:  
