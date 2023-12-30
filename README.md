@@ -1,6 +1,6 @@
 # fhemMAX2HASS
 Integrate [eQ-3 MAX!](https://www.eq-3.de/produkte/max.html) devices into [Home Assistant](https://www.home-assistant.io/) using [FHEM](https://fhem.de/) instead of the vendor's proprietary MAX Cube LAN Gateway.
-Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant.io/integrations/maxcube/), but it requires the vendor's proprietary [MAX Cube LAN Gateway](https://www.eq-3.de/produkte/max/detail/bc-lgw-o-tw.html). This is no longer available, no longer supported by the vendor, and has a reputation to "forget" its configuration. Also, eQ-3 has shutdown all MAX!-related cloud services in July 2023.
+Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant.io/integrations/maxcube/), but it requires the vendor's proprietary [MAX Cube LAN Gateway](https://www.eq-3.de/produkte/max/detail/bc-lgw-o-tw.html). This is no longer available, no longer supported by the vendor, and has a reputation to "forget" its configuration. Also, eQ-3 has shut down all MAX!-related cloud services in July 2023.
 
 ## Provided functionality
 Each MAX! device is registered as an individual device in [Home Assistant's device registry](https://developers.home-assistant.io/docs/device_registry_index/), along with the following information:
