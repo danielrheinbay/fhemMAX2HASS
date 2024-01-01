@@ -23,7 +23,9 @@ Device-specific functionality is registered as follows:
 
 Functionality of the climate device:
 * bidirectional communication, e.g. changes made to the physical device are reflected in Home Assistant
+* supports `minimumTemperature` and `maximumTemperature`, as set in FHEM
 * supports eco, comfort and boost modes
+* supports changing the temperature without changing the mode (i.e. if in automatic mode, changing the temperature does not switch to manual mode).
 
 ## Prerequisites
 * a working [Home Assistant](https://www.home-assistant.io/) instance
@@ -97,7 +99,7 @@ Functionality of the climate device:
 * [Window Sensor](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-SC-Rd-WM-2_UM_EN.pdf)
 
 ## Limitations
-* This integration deliberately does not allow thermostats to be set to their maximum temperature ("On" mode).
+* In FHEM, a Thermostat can be turned `off` while still in `auto` mode. Home Assistant's climate integration cannot render this situation: in Home Assistant, a thermostat is either in `auto` mode or off, but not both. If you set your thermostat to `off` while it is in `auto` mode (physically or via FHEM or by changing the temperature to 4.5 in Home Assistant), the thermostat will show as `off` in Home Assistant.
 * The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
   * [Eco Switch](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-PB-2-WM-2_UM_EN.pdf)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
