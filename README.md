@@ -99,7 +99,7 @@ Functionality of the climate device:
 * [Window Sensor](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-SC-Rd-WM-2_UM_EN.pdf)
 
 ## Limitations
-* In FHEM, a Thermostat can be turned `off` while still in `auto` mode. Home Assistant's climate integration cannot render this situation: in Home Assistant, a thermostat is either in `auto` mode or off, but not both. If you set your thermostat to `off` while it is in `auto` mode (physically or via FHEM or by changing the temperature to 4.5 in Home Assistant), the thermostat will show as `off` in Home Assistant.
+* In FHEM, a Thermostat can be turned `off` while still in `auto` mode. Home Assistant's climate integration cannot render this situation: in Home Assistant, a thermostat is either in `auto` mode or `off`, but not both. If you set your thermostat to `off` while it is in `auto` mode (physically or via FHEM or by changing the temperature to 4.5 in Home Assistant), the thermostat will show as `off` in Home Assistant.
 * The following eQ-3 MAX! devices are not yet supported (Pull Requests welcome!):
   * [Eco Switch](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-PB-2-WM-2_UM_EN.pdf)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
