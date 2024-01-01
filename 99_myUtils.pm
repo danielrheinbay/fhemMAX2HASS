@@ -99,17 +99,36 @@ sub MAX2HASSdiscovery {
         # Check if the device is a HeatingThermostat or WallMountedThermostat
         if ($model eq "HeatingThermostat" || $model eq "WallMountedThermostat") {
             # Climate device
+            # Get the subdevice type using InternalVal
+            my $minimumTemperature = ReadingsVal($device, "minimumTemperature", "off");
+            if ($minimumTemperature eq "off") {
+                $minimumTemperature = 4.5;
+            } elsif ($minimumTemperature eq "on") {
+                $minimumTemperature = 30.5;
+            }
+
+            my $maximumTemperature = ReadingsVal($device, "maximumTemperature", "on");
+            if ($maximumTemperature eq "on") {
+                $maximumTemperature = 30.5;
+            } elsif ($maximumTemperature eq "off") {
+                $maximumTemperature = 4.5;
+            }
+
+            my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
+
             my $modes = [qw(auto heat off)];
-            my $mode_state_template = "{% set values = {'boost': none, 'manual': 'heat'} %} {{ values[value] | default(value) }}";
-            my $mode_command_template = "{% set values = { 'heat': 'manual' } %} {{ values[value] | default(value) }}";
+            #my $mode_state_template = "{% set values = {'boost': none, 'manual': 'heat'} %} {{ values[value] | default(value) }}";
+            my $mode_state_template = "{% set values = { 'boost': none, 'manual': 'heat' } %} {% if is_state_attr('$hass_device_name', 'temperature', 4.5) %} off {% else %} {{ values[value] | default(value) }} {% endif %}";
+            my $mode_command_template = "{% set values = { 'heat': state_attr('$hass_device_name', 'temperature') } %} {{ values[value] | default(value) }}";
             
             my $preset_modes = [qw(eco boost comfort)];
-            my $preset_mode_command_template = "{% if is_state('climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate', 'auto') and value != 'boost' %} auto {{ value }} {% else %} {{ value }} {% endif %}";
+            my $preset_mode_command_template = "{% if is_state('$hass_device_name', 'auto') and value != 'boost' %} auto {{ value }} {% else %} {{ value }} {% endif %}";
 
-            my $temperature_command_template = "{% if is_state('climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate', 'auto') %} auto {{ value }} {% else %} {{ value }} {% endif %}";
+            my $temperature_state_template = "{% set values = { 'off': 4.5, 'on': 30.5 } %} {{ values[value] | default(value) }}";
+            my $temperature_command_template = "{% if is_state('$hass_device_name', 'auto') %} auto {{ value }} {% else %} {{ value }} {% endif %}";
             	    
             $mqtt_sensor_topic = "homeassistant/climate/$device/$addr-climate/config";
-            $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-climate", current_temperature_topic=>"$mqtt_device_topic/temperature", temperature_command_topic=>"$mqtt_device_topic/set", temperature_command_template=>"$temperature_command_template", mode_command_topic=>"$mqtt_device_topic/set", temperature_state_topic=>"$mqtt_device_topic/desiredTemperature", mode_state_topic=>"$mqtt_device_topic/mode", preset_mode_state_topic=>"$mqtt_device_topic/preset", unique_id=>"$manufacturer-$model-$addr-climate", modes=>$modes, mode_state_template=>"$mode_state_template", mode_command_template=>"$mode_command_template", preset_modes=>$preset_modes, preset_mode_command_topic=>"$mqtt_device_topic/set", preset_mode_command_template=>"$preset_mode_command_template", precision=>0.5, min_temp=>5.0, max_temp=>30.0, temp_step=>0.5, device=>$device_payload, availability=>$availability_payload};
+            $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-climate", current_temperature_topic=>"$mqtt_device_topic/temperature", temperature_state_template=>"$temperature_state_template", temperature_command_topic=>"$mqtt_device_topic/set", temperature_command_template=>"$temperature_command_template", mode_command_topic=>"$mqtt_device_topic/set", temperature_state_topic=>"$mqtt_device_topic/desiredTemperature", mode_state_topic=>"$mqtt_device_topic/mode", preset_mode_state_topic=>"$mqtt_device_topic/preset", unique_id=>"$manufacturer-$model-$addr-climate", modes=>$modes, mode_state_template=>"$mode_state_template", mode_command_template=>"$mode_command_template", preset_modes=>$preset_modes, preset_mode_command_topic=>"$mqtt_device_topic/set", preset_mode_command_template=>"$preset_mode_command_template", precision=>0.5, min_temp=>4.5, max_temp=>30.5, temp_step=>0.5, device=>$device_payload, availability=>$availability_payload};
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
 	  
