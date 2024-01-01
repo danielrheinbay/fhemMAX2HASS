@@ -24,8 +24,8 @@ Device-specific functionality is registered as follows:
 Functionality of the climate device:
 * bidirectional communication, e.g. changes made to the physical device are reflected in Home Assistant
 * supports `minimumTemperature` and `maximumTemperature`, as set in FHEM
-* supports eco, comfort and boost modes
-* supports changing the temperature without changing the mode (i.e. if in automatic mode, changing the temperature does not switch to manual mode).
+* supports `eco`, `comfort` and `boost` modes
+* supports changing the temperature without changing the mode (i.e. if in `auto` mode, changing the temperature does not switch to `manual` mode).
 
 ## Prerequisites
 * a working [Home Assistant](https://www.home-assistant.io/) instance
