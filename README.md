@@ -5,6 +5,8 @@ Home Assistant has a built-in [eQ-3 MAX! integration](https://www.home-assistant
 ## Provided functionality
 Each MAX! device is registered as an individual device in [Home Assistant's device registry](https://developers.home-assistant.io/docs/device_registry_index/), along with the following information:
 * its firmware version
+* its room  
+  Note: In FHEM, a device can be placed in more than one room. In Home Assistant, a device can be placed in no more than one area. Therefore, the first item from the device's `room` attribute is provided to Home Assistant as a suggestion for the device's area.
 * deep link to its FHEM device page, allowing you to jump from Home Assistant to FHEM for advanced configuration (e.g. setting week profiles).
 * diagnostic sensors:
   * battery binary sensor
