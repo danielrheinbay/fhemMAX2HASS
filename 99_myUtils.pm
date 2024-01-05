@@ -74,7 +74,7 @@ sub MAX2HASSdiscovery {
 
         # Register RSSI sensor for all devices
         $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-signal/config";
-        $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-signal", device_class=>"signal_strength", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/RSSI", unique_id=>"$manufacturer-$model-$addr-signal", device=>$device_payload, availability=>$availability_payload};
+        $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-signal", device_class=>"signal_strength", unit_of_measurement=>"dBm", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/RSSI", unique_id=>"$manufacturer-$model-$addr-signal", device=>$device_payload, availability=>$availability_payload};
         $mqtt_payload = toJSON($mqtt_payload);
         fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
