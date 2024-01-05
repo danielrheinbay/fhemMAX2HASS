@@ -52,7 +52,7 @@ Functionality of the climate device:
   attr mqtt msgAfterConnect -r homeassistant/binary_sensor/fhem/availability online
   attr mqtt msgBeforeDisconnect -r homeassistant/binary_sensor/fhem/availability offline
   ```  
-  Note: If you choose any other name than `mqtt`, change [99_myUtils.pm#L28](99_myUtils.pm#L28) accordingly.
+  Note: If you configure more than one MQTT2_CLIENT device, specify which one to use in [99_myUtils.pm#L56](99_myUtils.pm#L56).
 * Configure an [MQTT Generic Bridge](https://commandref.fhem.de/commandref.html#MQTT_GENERIC_BRIDGE):  
   ```
   define mqttGenericBridge MQTT_GENERIC_BRIDGE
@@ -106,7 +106,6 @@ Functionality of the climate device:
   * [Eco Switch](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda_portal/BC-PB-2-WM-2_UM_EN.pdf)
   * [Plug Adapter](https://www.eq-3.de/Downloads/eq3/downloads_produktkatalog/max/bda/BC-TS-Sw-Pl_UM_GE_eQ-3_130415.pdf)
 * No error handling: If required readings are missing, the code will fail silently. Deleting affected FHEM devices and re-adding them should restore all required readings.
-* The name `mqtt` for the connection from FHEM to your mqtt broker is hard-coded. If you chose a different name, change the code accordingly (see above).
 
 ## FAQ
 * **Q**: When using a Room Thermostat, the temperature and mode set through Home Assistant is not passed on to the Radiator Thermostats associated with the Room Thermostat. How can I control more than one thermostat in a room?  

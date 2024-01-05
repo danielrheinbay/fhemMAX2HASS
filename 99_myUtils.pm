@@ -16,8 +16,44 @@ myUtils_Initialize($$)
 }
 
 # Enter you functions below _this_ line.
+
+sub get_mqtt_device {
+    # Get the first mqtt device
+    # Get a list of all devices of type MQTT2_CLIENT
+    my @mqtt_devices = devspec2array("TYPE=MQTT2_CLIENT");
+
+    # Check if the list is not empty
+    if (@mqtt_devices) {
+        # Get the first item from the list
+        my $mqtt = $mqtt_devices[0];
+
+        # Check if the device exists in %defs
+        if (exists $defs{$mqtt}) {
+            # Return the device
+            return $mqtt;
+        }
+        else {
+            # Log an error message
+            Log3 $mqtt, 1, "MQTT2_CLIENT device not found in %defs";
+            # Return undef as the device was not found in %defs
+            return undef;
+        }
+    }
+    else {
+        # Log an error message
+        Log3 undef, 1, "No MQTT2_CLIENT devices found";
+
+        # Return undef as no device was found
+        return undef;
+    }
+}
+
 sub MAX2HASSdiscovery {
     my ($device) = @_;
+
+     # If you have multiple MQTT2_CLIENT devices, specify the name of the one you want to use here.
+     # If you only have one MQTT2_CLIENT device, you can leave this line as it is.
+    my $mqtt = undef;
   
     # Get the device type using InternalVal
     my $manufacturer = InternalVal($device, "TYPE", undef);
@@ -25,8 +61,9 @@ sub MAX2HASSdiscovery {
     # Check if the device is of type "MAX"
     if ($manufacturer eq "MAX") {
         # Get the mqtt device
-        my $mqtt = "mqtt";
-
+        if(!defined $mqtt || $mqtt eq "") {
+            $mqtt = get_mqtt_device();
+        }
         # Get the subdevice type using InternalVal
         my $model = InternalVal($device, "type", undef);
 	    # Get the address using InternalVal
@@ -70,13 +107,13 @@ sub MAX2HASSdiscovery {
         $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-battery/config";
         $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-battery", device_class=>"battery", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/batteryState", unique_id=>"$manufacturer-$model-$addr-battery", payload_off=>"ok", payload_on=>"low", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
         $mqtt_payload = toJSON($mqtt_payload);
-        fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+        fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
         # Register RSSI sensor for all devices
         $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-signal/config";
         $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-signal", device_class=>"signal_strength", unit_of_measurement=>"dBm", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/RSSI", unique_id=>"$manufacturer-$model-$addr-signal", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
         $mqtt_payload = toJSON($mqtt_payload);
-        fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+        fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
         # Check if the device is a ShutterContact
         if ($model eq "ShutterContact") {
@@ -84,7 +121,7 @@ sub MAX2HASSdiscovery {
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-window/config";
             $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-window", device_class=>"window", state_topic=>"$mqtt_device_topic/state", unique_id=>"$manufacturer-$model-$addr-window", payload_off=>"closed", payload_on=>"opened", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
             $mqtt_payload = toJSON($mqtt_payload);
-            fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+            fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
 
         # Check if the device is a HeatingThermostat
@@ -93,7 +130,7 @@ sub MAX2HASSdiscovery {
             $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-valve/config";
             $mqtt_payload = {name=>"Valve position", object_id=>"$manufacturer-$model-$addr-valve", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/valveposition", unique_id=>"$manufacturer-$model-$addr-valve", unit_of_measurement=>"%", icon=>"mdi:valve", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
             $mqtt_payload = toJSON($mqtt_payload);
-            fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+            fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
 
         # Check if the device is a HeatingThermostat or WallMountedThermostat
@@ -130,13 +167,13 @@ sub MAX2HASSdiscovery {
             $mqtt_sensor_topic = "homeassistant/climate/$device/$addr-climate/config";
             $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-climate", current_temperature_topic=>"$mqtt_device_topic/temperature", temperature_state_template=>"$temperature_state_template", temperature_command_topic=>"$mqtt_device_topic/set", temperature_command_template=>"$temperature_command_template", mode_command_topic=>"$mqtt_device_topic/set", temperature_state_topic=>"$mqtt_device_topic/desiredTemperature", mode_state_topic=>"$mqtt_device_topic/mode", preset_mode_state_topic=>"$mqtt_device_topic/preset", unique_id=>"$manufacturer-$model-$addr-climate", modes=>$modes, mode_state_template=>"$mode_state_template", mode_command_template=>"$mode_command_template", preset_modes=>$preset_modes, preset_mode_command_topic=>"$mqtt_device_topic/set", preset_mode_command_template=>"$preset_mode_command_template", precision=>0.5, min_temp=>4.5, max_temp=>30.5, temp_step=>0.5, device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
             $mqtt_payload = toJSON($mqtt_payload);
-            fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+            fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 	  
             # Panel lock device
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-panel/config";
             $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-panel", device_class=>"lock", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/panel", unique_id=>"$manufacturer-$model-$addr-panel", payload_off=>"locked", payload_on=>"unlocked", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
             $mqtt_payload = toJSON($mqtt_payload);
-            fhem("set mqtt publish $mqtt_sensor_topic $mqtt_payload");
+            fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
             # Subscribe to desiredTemperature
             if (! defined AttrVal($device, "mqttSubscribe", undef)) {
