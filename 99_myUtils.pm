@@ -99,8 +99,28 @@ sub MAX2HASSdiscovery {
 
         my $fhemstatus = (split / /, AttrVal($mqtt, "lwt", ""))[0];
 
-        my $device_payload = {manufacturer=>"eQ-3", model=>$device_types{$model}, name=>$device, identifiers=>[$addr,], sw_version=>$firmware, configuration_url=>$url, suggested_area=>$room};
-        my $availability_payload = [{topic=>$fhemstatus, payload_available=>"online", payload_not_available=>"offline"}, {topic=>"$mqtt_device_topic/Activity", payload_available=>"alive", payload_not_available=>"dead"}];
+        my $device_payload = {
+            manufacturer => "eQ-3",
+            model => $device_types{$model},
+            name => $device,
+            identifiers => [$addr],
+            configuration_url => $url,
+            suggested_area => $room,
+        };
+        $device_payload->{sw_version} = $firmware if defined $firmware;
+        
+        my $availability_payload = [
+            {
+                topic=>$fhemstatus,
+                payload_available=>"online",
+                payload_not_available=>"offline"
+            },
+            {
+                topic=>"$mqtt_device_topic/Activity",
+                payload_available=>"alive",
+                payload_not_available=>"dead"
+            }
+        ];
 
 
         # Make sure the device exports data to MQTT
@@ -118,13 +138,34 @@ sub MAX2HASSdiscovery {
 
         # Register battery sensor for all devices
         $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-battery/config";
-        $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-battery", device_class=>"battery", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/batteryState", unique_id=>"$manufacturer-$model-$addr-battery", payload_off=>"ok", payload_on=>"low", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+        $mqtt_payload = {
+            object_id=>"$manufacturer-$model-$addr-battery",
+            device_class=>"battery",
+            entity_category=>"diagnostic",
+            state_topic=>"$mqtt_device_topic/batteryState",
+            unique_id=>"$manufacturer-$model-$addr-battery",
+            payload_off=>"ok",
+            payload_on=>"low",
+            device=>$device_payload,
+            availability=>$availability_payload,
+            availability_mode=>"all"
+        };
         $mqtt_payload = toJSON($mqtt_payload);
         fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
         # Register RSSI sensor for all devices
         $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-signal/config";
-        $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-signal", device_class=>"signal_strength", unit_of_measurement=>"dBm", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/RSSI", unique_id=>"$manufacturer-$model-$addr-signal", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+        $mqtt_payload = {
+            object_id=>"$manufacturer-$model-$addr-signal",
+            device_class=>"signal_strength",
+            unit_of_measurement=>"dBm",
+            entity_category=>"diagnostic",
+            state_topic=>"$mqtt_device_topic/RSSI",
+            unique_id=>"$manufacturer-$model-$addr-signal",
+            device=>$device_payload,
+            availability=>$availability_payload,
+            availability_mode=>"all"
+        };
         $mqtt_payload = toJSON($mqtt_payload);
         fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
@@ -132,7 +173,18 @@ sub MAX2HASSdiscovery {
         if ($model eq "ShutterContact") {
             # Register window contact
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-window/config";
-            $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-window", device_class=>"window", state_topic=>"$mqtt_device_topic/state", unique_id=>"$manufacturer-$model-$addr-window", payload_off=>"closed", payload_on=>"opened", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+            $mqtt_payload = {
+                name=>undef,
+                object_id=>"$manufacturer-$model-$addr-window",
+                device_class=>"window",
+                state_topic=>"$mqtt_device_topic/state",
+                unique_id=>"$manufacturer-$model-$addr-window",
+                payload_off=>"closed",
+                payload_on=>"opened",
+                device=>$device_payload,
+                availability=>$availability_payload,
+                availability_mode=>"all"
+            };
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
@@ -143,7 +195,17 @@ sub MAX2HASSdiscovery {
             my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
             my $action_template = "{% set valve_position = state_attr($hass_device_name', 'valve_position') %} {% set temperature = state_attr($hass_device_name, 'temperature') %} {% if valve_position > 0 %}  heating {% elif valve_position == 0 and temperature > 4.5 %} idle {% elif valve_position == 0 and temperature == 4.5 %} off {% endif %}";
             $mqtt_sensor_topic = "homeassistant/valve/$device/$addr-valve/config";
-            $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-valve", entity_category=>"diagnostic", reports_position=>"true", state_topic=>"$mqtt_device_topic/valveposition", device_class=>"water", unique_id=>"$manufacturer-$model-$addr-valve", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+            $mqtt_payload = {
+                object_id=>"$manufacturer-$model-$addr-valve",
+                entity_category=>"diagnostic",
+                reports_position=>"true",
+                state_topic=>"$mqtt_device_topic/valveposition",
+                device_class=>"water",
+                unique_id=>"$manufacturer-$model-$addr-valve",
+                device=>$device_payload,
+                availability=>$availability_payload,
+                availability_mode=>"all"
+            };
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
@@ -178,13 +240,49 @@ sub MAX2HASSdiscovery {
             my $temperature_command_template = "{% if is_state('$hass_device_name', 'auto') %} auto {{ value }} {% else %} {{ value }} {% endif %}";
             	    
             $mqtt_sensor_topic = "homeassistant/climate/$device/$addr-climate/config";
-            $mqtt_payload = {name=>undef, object_id=>"$manufacturer-$model-$addr-climate", current_temperature_topic=>"$mqtt_device_topic/temperature", temperature_state_template=>"$temperature_state_template", temperature_command_topic=>"$mqtt_device_topic/set", temperature_command_template=>"$temperature_command_template", mode_command_topic=>"$mqtt_device_topic/set", temperature_state_topic=>"$mqtt_device_topic/desiredTemperature", mode_state_topic=>"$mqtt_device_topic/mode", preset_mode_state_topic=>"$mqtt_device_topic/preset", unique_id=>"$manufacturer-$model-$addr-climate", modes=>$modes, mode_state_template=>"$mode_state_template", mode_command_template=>"$mode_command_template", preset_modes=>$preset_modes, preset_mode_command_topic=>"$mqtt_device_topic/set", preset_mode_command_template=>"$preset_mode_command_template", precision=>0.5, min_temp=>4.5, max_temp=>30.5, temp_step=>0.5, device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+            $mqtt_payload = {
+                name=>undef,
+                object_id=>"$manufacturer-$model-$addr-climate",
+                current_temperature_topic=>"$mqtt_device_topic/temperature",
+                temperature_state_template=>"$temperature_state_template",
+                temperature_command_topic=>"$mqtt_device_topic/set",
+                temperature_command_template=>"$temperature_command_template",
+                mode_command_topic=>"$mqtt_device_topic/set",
+                temperature_state_topic=>"$mqtt_device_topic/desiredTemperature",
+                mode_state_topic=>"$mqtt_device_topic/mode",
+                preset_mode_state_topic=>"$mqtt_device_topic/preset",
+                unique_id=>"$manufacturer-$model-$addr-climate",
+                modes=>$modes,
+                mode_state_template=>"$mode_state_template",
+                mode_command_template=>"$mode_command_template",
+                preset_modes=>$preset_modes,
+                preset_mode_command_topic=>"$mqtt_device_topic/set",
+                preset_mode_command_template=>"$preset_mode_command_template",
+                precision=>0.5,
+                min_temp=>4.5,
+                max_temp=>30.5,
+                temp_step=>0.5,
+                device=>$device_payload,
+                availability=>$availability_payload,
+                availability_mode=>"all"
+            };
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 	  
             # Panel lock device
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-panel/config";
-            $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-panel", device_class=>"lock", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/panel", unique_id=>"$manufacturer-$model-$addr-panel", payload_off=>"locked", payload_on=>"unlocked", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+            $mqtt_payload = {
+                object_id=>"$manufacturer-$model-$addr-panel",
+                device_class=>"lock",
+                entity_category=>"diagnostic",
+                state_topic=>"$mqtt_device_topic/panel",
+                unique_id=>"$manufacturer-$model-$addr-panel",
+                payload_off=>"locked",
+                payload_on=>"unlocked",
+                device=>$device_payload,
+                availability=>$availability_payload,
+                availability_mode=>"all"
+            };
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
 
