@@ -21,7 +21,7 @@ Device-specific functionality is registered as follows:
 * Radiator Thermostat:
   * main climate device
   * lock diagnostic binary sensor
-  * valve position diagnostic sensor
+  * valve device
 
 Functionality of the climate device:
 * bidirectional communication, e.g. changes made to the physical device are reflected in Home Assistant
