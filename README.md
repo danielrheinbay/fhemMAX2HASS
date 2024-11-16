@@ -110,7 +110,7 @@ Functionality of the climate device:
 ## FAQ
 * **Q**: When using a Room Thermostat, the temperature and mode set through Home Assistant is not passed on to the Radiator Thermostats associated with the Room Thermostat. How can I control more than one thermostat in a room?  
   **A**: Yes, this is a known limitation of all MAX thermostats: they send temperature and mode changes only when set physically. They do not send changes when set over the air.
-  Here is a workaround, using you have one Wall Thermostat and one or more Room Thermostats in the same room:
+  Here is a workaround, assuming you have one Wall Thermostat and one or more Room Thermostats in the same room:
     * In Home Assistant, add the Wall Thermostat to your dashboard.
     * In FHEM, for each Radiator Thermostat, amend its `mqttSubscribe` attribute by a second subscription referring to the Wall Thermostat's `set` topic, e.g.  
       `desiredTemperature:stopic={"$base/<MyWallThermostat>/set"}`
