@@ -18,7 +18,7 @@ myUtils_Initialize($$)
 # Enter you functions below _this_ line.
 
 sub get_mqtt_device {
-    # Get the first mqtt device
+    # Use the first mqtt device
     # Get a list of all devices of type MQTT2_CLIENT
     my @mqtt_devices = devspec2array("TYPE=MQTT2_CLIENT");
 
@@ -52,20 +52,33 @@ sub MAX2HASSdiscovery {
     my ($device) = @_;
 
      # If you have multiple MQTT2_CLIENT devices, specify the name of the one you want to use here.
-     # If you only have one MQTT2_CLIENT device, you can leave this line as it is.
+     # If you only have one MQTT2_CLIENT device, you can leave mqtt undefined.
     my $mqtt = undef;
-  
+    if (!defined $mqtt || $mqtt eq "") {
+        $mqtt = get_mqtt_device();
+    } elsif (!exists $defs{$mqtt}) {
+        # Log an error message
+        Log3 $mqtt, 1, "MQTT2_CLIENT device not found in %defs";
+        # Return undef as the device was not found in %defs
+        return undef;
+    } elsif ($defs{$device}{TYPE} ne "MQTT2_CLIENT") {
+        # $device is not of type MQTT2_CLIENT
+        Log3 $mqtt, 1, "Device $device is not of type MQTT2_CLIENT";
+    }
+
     # Get the device type using InternalVal
     my $manufacturer = InternalVal($device, "TYPE", undef);
 
     # Check if the device is of type "MAX"
     if ($manufacturer eq "MAX") {
-        # Get the mqtt device
-        if(!defined $mqtt || $mqtt eq "") {
-            $mqtt = get_mqtt_device();
-        }
         # Get the subdevice type using InternalVal
         my $model = InternalVal($device, "type", undef);
+        my %device_types = (
+            "HeatingThermostat" => "MAX! Radiator Thermostat",
+            "ShutterContact" => "MAX! Window Sensor",
+            "WallMountedThermostat" => "MAX! Wall Thermostat",
+            "EcoSwitch" => "MAX! Eco Switch",
+        );
 	    # Get the address using InternalVal
         my $addr = InternalVal($device, "addr", undef);
         # Get the serial number using ReadingsVal
@@ -75,7 +88,7 @@ sub MAX2HASSdiscovery {
         # Get the rooms using AttrVal
         my $room = AttrVal($device, "room", undef);
         if (defined $room) {
-            # A device can be assigned to more than one room. If that is the case, take the first one. They are separated by commata.
+            # A device can be assigned to more than one room. If that is the case, take the first room. They are separated by commata.
             $room =~ s/,.*//;
         }
 
@@ -86,7 +99,7 @@ sub MAX2HASSdiscovery {
 
         my $fhemstatus = (split / /, AttrVal($mqtt, "lwt", ""))[0];
 
-        my $device_payload = {manufacturer=>$manufacturer, model=>$model, name=>$device, identifiers=>[$addr,], sw_version=>$firmware, configuration_url=>$url, suggested_area=>$room};
+        my $device_payload = {manufacturer=>"eQ-3", model=>$device_types{$model}, name=>$device, identifiers=>[$addr,], sw_version=>$firmware, configuration_url=>$url, suggested_area=>$room};
         my $availability_payload = [{topic=>$fhemstatus, payload_available=>"online", payload_not_available=>"offline"}, {topic=>"$mqtt_device_topic/Activity", payload_available=>"alive", payload_not_available=>"dead"}];
 
 
@@ -126,9 +139,11 @@ sub MAX2HASSdiscovery {
 
         # Check if the device is a HeatingThermostat
         if ($model eq "HeatingThermostat") {
-            # valveposition sensor
-            $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-valve/config";
-            $mqtt_payload = {name=>"Valve position", object_id=>"$manufacturer-$model-$addr-valve", entity_category=>"diagnostic", state_topic=>"$mqtt_device_topic/valveposition", unique_id=>"$manufacturer-$model-$addr-valve", unit_of_measurement=>"%", icon=>"mdi:valve", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
+            # valve
+            my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
+            my $action_template = "{% set valve_position = state_attr($hass_device_name', 'valve_position') %} {% set temperature = state_attr($hass_device_name, 'temperature') %} {% if valve_position > 0 %}  heating {% elif valve_position == 0 and temperature > 4.5 %} idle {% elif valve_position == 0 and temperature == 4.5 %} off {% endif %}";
+            $mqtt_sensor_topic = "homeassistant/valve/$device/$addr-valve/config";
+            $mqtt_payload = {object_id=>"$manufacturer-$model-$addr-valve", entity_category=>"diagnostic", reports_position=>"true", state_topic=>"$mqtt_device_topic/valveposition", device_class=>"water", unique_id=>"$manufacturer-$model-$addr-valve", device=>$device_payload, availability=>$availability_payload, availability_mode=>"all"};
             $mqtt_payload = toJSON($mqtt_payload);
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
@@ -136,7 +151,7 @@ sub MAX2HASSdiscovery {
         # Check if the device is a HeatingThermostat or WallMountedThermostat
         if ($model eq "HeatingThermostat" || $model eq "WallMountedThermostat") {
             # Climate device
-            # Get the subdevice type using InternalVal
+            my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
             my $minimumTemperature = ReadingsVal($device, "minimumTemperature", "off");
             if ($minimumTemperature eq "off") {
                 $minimumTemperature = 4.5;
@@ -151,11 +166,9 @@ sub MAX2HASSdiscovery {
                 $maximumTemperature = 4.5;
             }
 
-            my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
-
             my $modes = [qw(auto heat off)];
             #my $mode_state_template = "{% set values = {'boost': none, 'manual': 'heat'} %} {{ values[value] | default(value) }}";
-            my $mode_state_template = "{% set values = { 'boost': none, 'manual': 'heat' } %} {% if is_state_attr('$hass_device_name', 'temperature', 4.5) %} off {% else %} {{ values[value] | default(value) }} {% endif %}";
+            my $mode_state_template = "{% set values = { 'boost': none, 'manual': 'heat' } %} {% if is_state_attr('$hass_device_name', 'temperature', 4.5) and value == 'manual' %} off {% else %} {{ values[value] | default(value) }} {% endif %}";
             my $mode_command_template = "{% set values = { 'heat': state_attr('$hass_device_name', 'temperature') } %} {{ values[value] | default(value) }}";
             
             my $preset_modes = [qw(eco boost comfort)];
