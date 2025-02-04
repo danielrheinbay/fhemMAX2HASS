@@ -71,6 +71,9 @@ Functionality of the climate device:
   * Create a new reading `Activity`, which the above DOIF relies on.
   * After 12 hours of inactivity (e.g. battery dead), the device is marked unavailable in Home Assistant.
 
+**Note**: The script sets up all required mqttPublish and mqttSubscribe attributes if they are not yet set. However, the script does not overwrite existing mqttPublish or mqttSubscribe settings. So if you have them setup already, please delete them manually and let the script do its work.
+Not overwriting existing mqttPublish/mqttSubscribe attributes is by design, because this allows you to subscribe a radiator thermostat's desiredTemperature to the thermostat's topic as well as to a corresponding room thermostat's topic. Without doing that, your radiators won't adopt the temperature you send to the room thermostat as the room thermostat only sends a set command to its associated radiator thermostats if you change its desiredTemperature physically on the device, but not if you change the desiredTemperature over the air.
+
 ### Home Assistant
 * Backup your Home Assistant `config` directory, just in case anything goes wrong.
 * Configure a connection to your MQTT broker using the [MQTT integration](https://www.home-assistant.io/integrations/mqtt/).
