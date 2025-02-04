@@ -292,7 +292,7 @@ sub MAX2HASSdiscovery {
             }
             # Generate preset userReading
             if (! defined AttrVal($device, "userReadings", undef)) {
-                fhem("attr $device userReadings preset {ReadingsVal(\$name, \"mode\", 0) eq \"boost\" ? \"boost\" : ReadingsVal(\$name, \"desiredTemperature\", 0) == ReadingsVal(\$name, \"ecoTemperature\", 0) ? \"eco\" : ReadingsVal(\$name, \"desiredTemperature\", 0) == ReadingsVal(\$name, \"comfortTemperature\", 0) ? \"comfort\" : \"none\" }");
+                fhem("attr $device userReadings preset {ReadingsVal(\$name, \"mode\", 0) eq \"boost\" ? \"boost\" : ReadingsVal(\$name, \"desiredTemperature\", 0) eq ReadingsVal(\$name, \"ecoTemperature\", 0) ? \"eco\" : ReadingsVal(\$name, \"desiredTemperature\", 0) eq ReadingsVal(\$name, \"comfortTemperature\", 0) ? \"comfort\" : \"none\" }");
             }
         }
     }
