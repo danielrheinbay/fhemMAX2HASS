@@ -75,6 +75,7 @@ sub MAX2HASSdiscovery {
         my $model = InternalVal($device, "type", undef);
         my %device_types = (
             "HeatingThermostat" => "MAX! Radiator Thermostat",
+            "HeatingThermostatPlus" => "MAX! Radiator Thermostat Plus",
             "ShutterContact" => "MAX! Window Sensor",
             "WallMountedThermostat" => "MAX! Wall Thermostat",
             "EcoSwitch" => "MAX! Eco Switch",
@@ -189,8 +190,8 @@ sub MAX2HASSdiscovery {
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
 
-        # Check if the device is a HeatingThermostat
-        if ($model eq "HeatingThermostat") {
+        # Check if the device is a HeatingThermostat or HeatingThermostatPlus
+        if ($model eq "HeatingThermostat" || $model eq "HeatingThermostatPlus") {
             # valve
             my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
             my $action_template = "{% set valve_position = state_attr($hass_device_name', 'valve_position') %} {% set temperature = state_attr($hass_device_name, 'temperature') %} {% if valve_position > 0 %}  heating {% elif valve_position == 0 and temperature > 4.5 %} idle {% elif valve_position == 0 and temperature == 4.5 %} off {% endif %}";
@@ -210,8 +211,8 @@ sub MAX2HASSdiscovery {
             fhem("set $mqtt publish $mqtt_sensor_topic $mqtt_payload");
         }
 
-        # Check if the device is a HeatingThermostat or WallMountedThermostat
-        if ($model eq "HeatingThermostat" || $model eq "WallMountedThermostat") {
+        # Check if the device is a HeatingThermostat or HeatingThermostatPlus or WallMountedThermostat
+        if ($model eq "HeatingThermostat"  || $model eq "HeatingThermostatPlus" || $model eq "WallMountedThermostat") {
             # Climate device
             my $hass_device_name = "climate." . lc($manufacturer . "_" . $model . "_" . $addr) . "_climate";
             my $minimumTemperature = ReadingsVal($device, "minimumTemperature", "off");
