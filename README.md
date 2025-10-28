@@ -18,7 +18,7 @@ Device-specific functionality is registered as follows:
 * Room Thermostat:
   * main climate device
   * lock diagnostic binary sensor
-* Radiator Thermostat:
+* Radiator Thermostat (Plus):
   * main climate device
   * lock diagnostic binary sensor
   * valve device
