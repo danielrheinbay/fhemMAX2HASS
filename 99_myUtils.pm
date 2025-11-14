@@ -140,7 +140,7 @@ sub MAX2HASSdiscovery {
         # Register battery sensor for all devices
         $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-battery/config";
         $mqtt_payload = {
-            object_id=>"$manufacturer-$model-$addr-battery",
+            default_entity_id=>"$manufacturer-$model-$addr-battery",
             device_class=>"battery",
             entity_category=>"diagnostic",
             state_topic=>"$mqtt_device_topic/batteryState",
@@ -157,7 +157,7 @@ sub MAX2HASSdiscovery {
         # Register RSSI sensor for all devices
         $mqtt_sensor_topic = "homeassistant/sensor/$device/$addr-signal/config";
         $mqtt_payload = {
-            object_id=>"$manufacturer-$model-$addr-signal",
+            default_entity_id=>"$manufacturer-$model-$addr-signal",
             device_class=>"signal_strength",
             unit_of_measurement=>"dBm",
             entity_category=>"diagnostic",
@@ -176,7 +176,7 @@ sub MAX2HASSdiscovery {
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-window/config";
             $mqtt_payload = {
                 name=>undef,
-                object_id=>"$manufacturer-$model-$addr-window",
+                default_entity_id=>"$manufacturer-$model-$addr-window",
                 device_class=>"window",
                 state_topic=>"$mqtt_device_topic/state",
                 unique_id=>"$manufacturer-$model-$addr-window",
@@ -197,7 +197,7 @@ sub MAX2HASSdiscovery {
             my $action_template = "{% set valve_position = state_attr($hass_device_name', 'valve_position') %} {% set temperature = state_attr($hass_device_name, 'temperature') %} {% if valve_position > 0 %}  heating {% elif valve_position == 0 and temperature > 4.5 %} idle {% elif valve_position == 0 and temperature == 4.5 %} off {% endif %}";
             $mqtt_sensor_topic = "homeassistant/valve/$device/$addr-valve/config";
             $mqtt_payload = {
-                object_id=>"$manufacturer-$model-$addr-valve",
+                default_entity_id=>"$manufacturer-$model-$addr-valve",
                 entity_category=>"diagnostic",
                 reports_position=>"true",
                 state_topic=>"$mqtt_device_topic/valveposition",
@@ -243,7 +243,7 @@ sub MAX2HASSdiscovery {
             $mqtt_sensor_topic = "homeassistant/climate/$device/$addr-climate/config";
             $mqtt_payload = {
                 name=>undef,
-                object_id=>"$manufacturer-$model-$addr-climate",
+                default_entity_id=>"$manufacturer-$model-$addr-climate",
                 current_temperature_topic=>"$mqtt_device_topic/temperature",
                 temperature_state_template=>"$temperature_state_template",
                 temperature_command_topic=>"$mqtt_device_topic/set",
@@ -273,7 +273,7 @@ sub MAX2HASSdiscovery {
             # Panel lock device
             $mqtt_sensor_topic = "homeassistant/binary_sensor/$device/$addr-panel/config";
             $mqtt_payload = {
-                object_id=>"$manufacturer-$model-$addr-panel",
+                default_entity_id=>"$manufacturer-$model-$addr-panel",
                 device_class=>"lock",
                 entity_category=>"diagnostic",
                 state_topic=>"$mqtt_device_topic/panel",
